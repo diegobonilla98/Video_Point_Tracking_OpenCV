@@ -4,6 +4,7 @@ from math import sin, cos, atan2, sqrt, degrees
 sift = cv2.xfeatures2d.SIFT_create()
 bf = cv2.BFMatcher()
 video = cv2.VideoCapture('video_test.mp4')
+path = []
 old_frame = None
 old_kp = None
 old_des = None
@@ -12,8 +13,8 @@ while video.isOpened():
     if not ret:
         break
     height, width = frame.shape[:2]
-    original = frame.copy()
     frame = cv2.resize(frame, (int(width * 1.5), int(height * 1.5)), cv2.INTER_AREA)
+    path_image = frame.copy()
     delta_pos = frame.copy()
     height, width = frame.shape[:2]
     new_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -46,13 +47,18 @@ while video.isOpened():
     y_start = height//2
     y_end = int(sin(mean_angle) * mean_magnitude + y_start)
     x_end = int(cos(mean_angle) * mean_magnitude + x_start)
-    cv2.arrowedLine(delta_pos, (x_end, y_end), (x_start, y_start), (0, 0, 255), 5)
+    path.append((x_end,  y_end))
+    cv2.arrowedLine(delta_pos, (x_end, y_end), (x_start, y_start), (0, 255, 0), 5)
     cv2.putText(delta_pos, "Rel. Angle: " + str(round(degrees(mean_angle), 1)), (10, 15),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
     cv2.putText(delta_pos, "Rel. Displacement: " + str(round(mean_magnitude, 1)), (10, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+    for idx in range(len(path)-1):
+        x1, y1 = path[idx]
+        x2, y2 = path[idx+1]
+        cv2.line(path_image, (x1, y1), (x2, y2), (0, 0, 255), 2)
     cv2.imshow('Motion tracker', frame)
-    cv2.imshow('Original', original)
+    cv2.imshow('Path', path_image)
     cv2.imshow('Delta position', delta_pos)
     if cv2.waitKey(1) == ord('q'):
         break
