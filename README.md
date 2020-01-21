@@ -9,3 +9,7 @@ For each frame you get the keypoints and the descriptors (using the OpenCV SIFT 
 ![](video_tracking.gif)
 
 
+## Video Stabilization
+On the other file there is a similar program but what it does is to move the image with the camera so makes it static. The stabilization is made in real time and just implements hand-made translations (transformations in position) not in rotation. I want to learn more about that before testing it.
+
+![](video_stabilized.gif)
